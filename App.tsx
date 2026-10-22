@@ -21,8 +21,8 @@ import {
   JetBrainsMono_400Regular 
 } from '@expo-google-fonts/jetbrains-mono';
 
-// IP centralizada del servidor backend en red local
-const API_URL = "http://10.200.38.48:8000";
+// URL del servidor backend (Túnel HTTPS seguro accesible desde cualquier red 4G/5G/Wi-Fi)
+const API_URL = "https://9c247aa0f2e90b.lhr.life";
 
 type ActionOption = {
   label: string;
