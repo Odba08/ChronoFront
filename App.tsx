@@ -242,6 +242,8 @@ export default function App() {
     setGameOverReason(null);
     setErrorMsg(null);
     setShowLoopsModal(false);
+    setViewingPastPassage(null);
+    setBookView('READER');
 
     const nuevaSesion = `arquimedes_${Date.now()}`;
 
@@ -361,7 +363,7 @@ export default function App() {
       await fetch(`${API_URL}/api/game/${idAEliminar}`, { method: 'DELETE' });
       setSavedGamesList(prev => prev.filter(g => g.session_id !== idAEliminar));
       if (sessionId === idAEliminar) {
-        comenzarNuevaNovela();
+        await comenzarNuevaNovela();
       }
     } catch (err) {
       console.error("Error eliminando bucle:", err);
@@ -1058,9 +1060,11 @@ export default function App() {
                         <TouchableOpacity 
                           style={styles.deleteGameButton}
                           onPress={() => eliminarBucle(game.session_id)}
-                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                          hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}
+                          activeOpacity={0.7}
                         >
-                          <Feather name="trash-2" size={13} color="#F87171" />
+                          <Feather name="trash-2" size={13} color="#F87171" style={{ marginRight: 4 }} />
+                          <Text style={styles.deleteGameButtonText}>Borrar</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -1952,11 +1956,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   deleteGameButton: {
+    flexDirection: 'row',
     borderWidth: 1,
     borderColor: '#7F1D1D',
     backgroundColor: '#450A0A',
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     borderRadius: 4,
     alignItems: 'center',
   },
