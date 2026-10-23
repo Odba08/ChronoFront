@@ -487,6 +487,18 @@ export default function App() {
               <Text style={styles.coverSecondaryButtonText}>IR DIRECTO AL LECTOR</Text>
             </View>
           </TouchableOpacity>
+
+          {/* DESCARGA DIRECTA DE LA EDICIÓN COMPLETA */}
+          <TouchableOpacity 
+            style={styles.coverDownloadEpubButton}
+            onPress={() => Linking.openURL(`${API_URL}/api/book/download/complete`)}
+            activeOpacity={0.8}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Feather name="download" size={14} color="#F59E0B" style={{ marginRight: 8 }} />
+              <Text style={styles.coverDownloadEpubText}>DESCARGAR LIBRO I COMPLETO (EPUB)</Text>
+            </View>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     );
@@ -837,20 +849,37 @@ export default function App() {
               </TouchableOpacity>
             </View>
 
-            {/* Botón de Exportar EPUB en el Drawer */}
+            {/* Botón 1: Descargar Obra Completa Oficial */}
             <TouchableOpacity 
-              style={[styles.epubBannerButton, { backgroundColor: isPaper ? '#3B2F25' : '#1E293B', borderColor: theme.accentAmber }]}
+              style={[styles.epubBannerButton, { backgroundColor: isPaper ? '#3B2F25' : '#1E293B', borderColor: '#F59E0B', marginBottom: 10 }]}
+              onPress={() => Linking.openURL(`${API_URL}/api/book/download/complete`)}
+              activeOpacity={0.8}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
+                <Feather name="download" size={15} color="#F59E0B" style={{ marginRight: 8 }} />
+                <Text style={[styles.epubBannerButtonText, { color: isPaper ? '#F4EEDD' : '#F59E0B' }]}>
+                  DESCARGAR LIBRO I COMPLETO (OBRA ÍNTEGRA)
+                </Text>
+              </View>
+              <Text style={[styles.epubBannerButtonSub, { color: isPaper ? '#C5B9A4' : '#94A3B8' }]}>
+                Todos los capítulos (1 al 10) con portada y frontispicio para Moon+ Reader
+              </Text>
+            </TouchableOpacity>
+
+            {/* Botón 2: Exportar Crónica de la Sesión en curso */}
+            <TouchableOpacity 
+              style={[styles.epubBannerButton, { backgroundColor: isPaper ? '#E8DFCC' : '#0F172A', borderColor: theme.border, marginBottom: 12 }]}
               onPress={() => Linking.openURL(`${API_URL}/api/game/${sessionId}/export/epub`)}
               activeOpacity={0.8}
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
-                <Feather name="download" size={15} color={isPaper ? '#F4EEDD' : '#38BDF8'} style={{ marginRight: 8 }} />
-                <Text style={[styles.epubBannerButtonText, { color: isPaper ? '#F4EEDD' : '#38BDF8' }]}>
-                  DESCARGAR ESTA NOVELA EN EPUB
+                <Feather name="bookmark" size={13} color={theme.textMuted} style={{ marginRight: 8 }} />
+                <Text style={[styles.epubBannerButtonText, { color: theme.textMain, fontSize: 11 }]}>
+                  Exportar Mi Crónica Personal (Turnos Jugados)
                 </Text>
               </View>
-              <Text style={[styles.epubBannerButtonSub, { color: isPaper ? '#C5B9A4' : '#94A3B8' }]}>
-                Compilada para Apple Books, Moon+ Reader y Kindle
+              <Text style={[styles.epubBannerButtonSub, { color: theme.textMuted }]}>
+                Guarda los capítulos que llevas vividos con tus propias decisiones
               </Text>
             </TouchableOpacity>
 
@@ -948,6 +977,23 @@ export default function App() {
                 <Feather name="plus-circle" size={13} color="#38BDF8" style={{ marginRight: 8 }} />
                 <Text style={styles.newLoopButtonText}>COMENZAR NUEVA TRAYECTORIA DESDE EL INICIO CANÓNICO</Text>
               </View>
+            </TouchableOpacity>
+
+            {/* Descarga Directa del Libro Completo */}
+            <TouchableOpacity 
+              style={[styles.epubBannerButton, { backgroundColor: isPaper ? '#3B2F25' : '#1E293B', borderColor: '#F59E0B', marginBottom: 16 }]}
+              onPress={() => Linking.openURL(`${API_URL}/api/book/download/complete`)}
+              activeOpacity={0.8}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
+                <Feather name="download" size={15} color="#F59E0B" style={{ marginRight: 8 }} />
+                <Text style={[styles.epubBannerButtonText, { color: isPaper ? '#F4EEDD' : '#F59E0B' }]}>
+                  DESCARGAR LIBRO I COMPLETO (OBRA ÍNTEGRA)
+                </Text>
+              </View>
+              <Text style={[styles.epubBannerButtonSub, { color: isPaper ? '#C5B9A4' : '#94A3B8' }]}>
+                Los 10 capítulos oficiales con portada y frontispicio para Moon+ Reader
+              </Text>
             </TouchableOpacity>
 
             <Text style={[styles.savedGamesSectionTitle, { color: theme.textMuted }]}>
@@ -1050,20 +1096,37 @@ export default function App() {
             </View>
 
             <ScrollView style={styles.modalScroll}>
-              {/* Botón Exportar Novela a EPUB */}
+              {/* Botón Descargar Libro Completo */}
               <TouchableOpacity 
-                style={[styles.exportEpubButton, { backgroundColor: isPaper ? '#3B2F25' : '#0F172A', borderColor: theme.accentBlue }]} 
+                style={[styles.exportEpubButton, { backgroundColor: isPaper ? '#3B2F25' : '#0F172A', borderColor: '#F59E0B', marginBottom: 12 }]} 
+                onPress={() => Linking.openURL(`${API_URL}/api/book/download/complete`)}
+                activeOpacity={0.8}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
+                  <Feather name="download" size={15} color="#F59E0B" style={{ marginRight: 8 }} />
+                  <Text style={[styles.exportEpubButtonText, { color: isPaper ? '#F4EEDD' : '#F59E0B' }]}>
+                    DESCARGAR LIBRO I COMPLETO (OBRA ÍNTEGRA)
+                  </Text>
+                </View>
+                <Text style={[styles.exportEpubButtonSubtext, { color: isPaper ? '#C5B9A4' : '#94A3B8' }]}>
+                  Todos los capítulos con portada y frontispicio para Apple Books y Moon+ Reader
+                </Text>
+              </TouchableOpacity>
+
+              {/* Botón Exportar Mi Crónica Personal de la Partida */}
+              <TouchableOpacity 
+                style={[styles.exportEpubButton, { backgroundColor: isPaper ? '#E8DFCC' : '#1E293B', borderColor: theme.border }]} 
                 onPress={() => Linking.openURL(`${API_URL}/api/game/${sessionId}/export/epub`)}
                 activeOpacity={0.8}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
-                  <Feather name="download" size={15} color={isPaper ? '#F4EEDD' : '#38BDF8'} style={{ marginRight: 8 }} />
-                  <Text style={[styles.exportEpubButtonText, { color: isPaper ? '#F4EEDD' : '#38BDF8' }]}>
-                    EXPORTAR NOVELA A EPUB (APPLE BOOKS)
+                  <Feather name="bookmark" size={13} color={theme.textMuted} style={{ marginRight: 8 }} />
+                  <Text style={[styles.exportEpubButtonText, { color: theme.textMain, fontSize: 11 }]}>
+                    Exportar Mi Crónica Personal (Turnos Jugados)
                   </Text>
                 </View>
-                <Text style={[styles.exportEpubButtonSubtext, { color: isPaper ? '#C5B9A4' : '#94A3B8' }]}>
-                  Compila los capítulos y escenas vividas hasta ahora en tu iPad
+                <Text style={[styles.exportEpubButtonSubtext, { color: theme.textMuted }]}>
+                  Compila las elecciones y escenas que llevas vividas en este bucle
                 </Text>
               </TouchableOpacity>
 
@@ -1309,6 +1372,23 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 1.5,
     color: '#777',
+  },
+  coverDownloadEpubButton: {
+    borderWidth: 1,
+    borderColor: '#D97706',
+    backgroundColor: 'rgba(217, 119, 6, 0.12)',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginTop: 14,
+    alignItems: 'center',
+  },
+  coverDownloadEpubText: {
+    fontFamily: 'JetBrainsMono_400Regular',
+    fontSize: 11,
+    color: '#F59E0B',
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
 
   // ----------------- BARRA 1: CONTROL SUPERIOR -----------------
