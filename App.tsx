@@ -88,8 +88,10 @@ export default function App() {
   // Estado de la novela en curso (Arquímedes)
   const [sessionId, setSessionId] = useState("");
   const [actTitle, setActTitle] = useState("Acto I: La Puerta de Hierro y Ceniza");
+  const [actNumber, setActNumber] = useState(1);
+  const [climaxPhase, setClimaxPhase] = useState("Inmersión Analítica");
   const [chapterNumber, setChapterNumber] = useState(1);
-  const [chapterTitle, setChapterTitle] = useState("Capítulo 1: El Umbral de la Academia");
+  const [chapterTitle, setChapterTitle] = useState("El Umbral de la Academia");
   const [salud, setSalud] = useState(100);
   const [entropia, setEntropia] = useState(0);
   const [virginia, setVirginia] = useState<VirginiaState>({
@@ -167,8 +169,10 @@ export default function App() {
     setOpciones(data.options ?? []);
     setIsCrossroad(Boolean(data.is_crossroad));
     setChapterNumber(data.chapter_number ?? 1);
-    setChapterTitle(data.chapter_title ?? `Capítulo ${data.chapter_number ?? 1}: El Umbral de la Academia`);
+    setChapterTitle(data.chapter_title ?? "El Umbral de la Academia");
     setActTitle(data.act_title ?? "Acto I: La Puerta de Hierro y Ceniza");
+    if (data.act_number) setActNumber(data.act_number);
+    if (data.climax_phase) setClimaxPhase(data.climax_phase);
     
     if (data.virginia) setVirginia(data.virginia);
     if (data.inventory) setInventory(data.inventory);
@@ -585,10 +589,12 @@ export default function App() {
           <Text style={[styles.navBarButtonText, { color: theme.textMain }]}>ÍNDICE</Text>
         </TouchableOpacity>
 
-        {/* Título Central */}
+        {/* Título Central enfocado en el ACTO actual */}
         <View style={styles.navBarTitleContainer}>
           <Text style={[styles.navBarTitle, { color: theme.headerTitle }]}>ARQUÍMEDES</Text>
-          <Text style={[styles.navBarSubTitle, { color: theme.accentAmber }]}>LIBRO I</Text>
+          <Text style={[styles.navBarSubTitle, { color: theme.accentAmber }]}>
+            {(actTitle || "ACTO I").toUpperCase()}
+          </Text>
         </View>
 
         {/* Botones Derecha: Tema Claro/Oscuro + Portada + Trayectorias (Estéticos Unicolor) */}
@@ -656,10 +662,12 @@ export default function App() {
           </View>
         </View>
 
-        {/* Indicador de Rama Activa */}
-        <Text style={[styles.ribbonBranchText, { color: theme.textMuted }]} numberOfLines={1}>
-          RAMA: {activeBranch.toUpperCase()}
-        </Text>
+        {/* Indicador de Cercanía al Clímax del Acto */}
+        <View style={[styles.climaxBadge, { borderColor: theme.border, backgroundColor: theme.cardBg }]}>
+          <Text style={[styles.climaxBadgeText, { color: theme.accentAmber }]} numberOfLines={1}>
+            ◈ {climaxPhase.toUpperCase()}
+          </Text>
+        </View>
 
         {/* Píldora Virginia (Abre Dossier al pulsar) */}
         <TouchableOpacity 
@@ -713,6 +721,9 @@ export default function App() {
           </Text>
           <Text style={[styles.chapterHeaderTitle, { color: theme.headerTitle }]}>
             {viewingPastPassage ? viewingPastPassage.chapter_title : chapterTitle}
+          </Text>
+          <Text style={[styles.climaxPhaseTag, { color: theme.textMuted }]}>
+            Arco Dramático: {climaxPhase}
           </Text>
           <View style={[styles.bookHeaderDivider, { backgroundColor: theme.border }]} />
         </View>
@@ -1471,11 +1482,25 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: 'bold',
   },
-  ribbonBranchText: {
+  climaxBadge: {
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    maxWidth: 160,
+  },
+  climaxBadgeText: {
     fontFamily: 'JetBrainsMono_400Regular',
     fontSize: 9,
-    letterSpacing: 1,
-    maxWidth: 130,
+    letterSpacing: 0.8,
+    fontWeight: 'bold',
+  },
+  climaxPhaseTag: {
+    fontFamily: 'JetBrainsMono_400Regular',
+    fontSize: 10,
+    letterSpacing: 1.5,
+    marginTop: 4,
+    textAlign: 'center',
   },
   virginiaSlimPill: {
     borderWidth: 1,
