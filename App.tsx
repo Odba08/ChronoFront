@@ -12,7 +12,8 @@ import {
   Dimensions, 
   Linking,
   Animated,
-  Platform
+  Platform,
+  Alert
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as Font from 'expo-font';
@@ -374,6 +375,47 @@ export default function App() {
     }
   };
 
+  const borrarTodasLasPartidas = async () => {
+    Alert.alert(
+      "Borrar Todo el Archivo",
+      "¿Deseas eliminar todas las trayectorias registradas y comenzar una novela completamente limpia desde el Acto I?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Borrar Todo y Reiniciar",
+          style: "destructive",
+          onPress: async () => {
+            setLoading(true);
+            try {
+              await fetch(`${API_URL}/api/games/clear-all`, { method: 'DELETE' });
+              setSavedGamesList([]);
+              await comenzarNuevaNovela();
+            } catch (err) {
+              console.error("Error al borrar todo:", err);
+              await comenzarNuevaNovela();
+            } finally {
+              setLoading(false);
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const confirmarNuevaNovela = () => {
+    Alert.alert(
+      "Nueva Novela",
+      "¿Deseas comenzar una nueva trayectoria canónica en el Acto I: La Academia?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Comenzar Nueva",
+          onPress: comenzarNuevaNovela
+        }
+      ]
+    );
+  };
+
   const abrirDrawerCapitulos = async () => {
     setShowChaptersDrawer(true);
     setLoadingPassages(true);
@@ -484,13 +526,35 @@ export default function App() {
           </TouchableOpacity>
 
           <TouchableOpacity 
+            style={[styles.coverSecondaryButton, { borderColor: '#38BDF8', borderWidth: 1, backgroundColor: 'rgba(56, 189, 248, 0.08)' }]}
+            onPress={confirmarNuevaNovela}
+            activeOpacity={0.8}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Feather name="plus-circle" size={14} color="#38BDF8" style={{ marginRight: 6 }} />
+              <Text style={[styles.coverSecondaryButtonText, { color: '#38BDF8', fontWeight: 'bold' }]}>COMENZAR NUEVA NOVELA</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
             style={styles.coverSecondaryButton}
             onPress={() => setBookView('READER')}
             activeOpacity={0.7}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Feather name="book-open" size={14} color="#888" style={{ marginRight: 6 }} />
-              <Text style={styles.coverSecondaryButtonText}>IR DIRECTO AL LECTOR</Text>
+              <Text style={styles.coverSecondaryButtonText}>IR AL LECTOR</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.coverSecondaryButton}
+            onPress={abrirModalBucles}
+            activeOpacity={0.7}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Feather name="bookmark" size={14} color="#888" style={{ marginRight: 6 }} />
+              <Text style={styles.coverSecondaryButtonText}>REGISTRO DE PARTIDAS</Text>
             </View>
           </TouchableOpacity>
 
@@ -641,6 +705,21 @@ export default function App() {
               name="bookmark" 
               size={18} 
               color={theme.textMain} 
+            />
+          </TouchableOpacity>
+
+          {/* Comenzar Nueva Trayectoria / Reiniciar */}
+          <TouchableOpacity 
+            style={styles.navBarIconButton}
+            onPress={confirmarNuevaNovela}
+            activeOpacity={0.7}
+            hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+            accessibilityLabel="Iniciar nueva novela"
+          >
+            <Feather 
+              name="plus-circle" 
+              size={18} 
+              color="#38BDF8" 
             />
           </TouchableOpacity>
         </View>
@@ -989,6 +1068,17 @@ export default function App() {
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Feather name="plus-circle" size={13} color="#38BDF8" style={{ marginRight: 8 }} />
                 <Text style={styles.newLoopButtonText}>COMENZAR NUEVA TRAYECTORIA DESDE EL INICIO CANÓNICO</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.newLoopButton, { backgroundColor: 'transparent', borderColor: '#F87171', marginTop: -6, marginBottom: 14 }]} 
+              onPress={borrarTodasLasPartidas}
+              activeOpacity={0.8}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Feather name="trash-2" size={13} color="#F87171" style={{ marginRight: 8 }} />
+                <Text style={[styles.newLoopButtonText, { color: '#F87171' }]}>BORRAR TODAS LAS PARTIDAS Y REINICIAR DE CERO</Text>
               </View>
             </TouchableOpacity>
 
