@@ -11,8 +11,10 @@ import {
   Image, 
   Dimensions, 
   Linking,
-  Animated
+  Animated,
+  Platform
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import { 
   Merriweather_400Regular, 
@@ -21,6 +23,11 @@ import {
 import { 
   JetBrainsMono_400Regular 
 } from '@expo-google-fonts/jetbrains-mono';
+
+// Altura de barra de estado para evitar solapamiento con reloj, WiFi y notch
+const STATUSBAR_HEIGHT = Platform.OS === 'android' 
+  ? (StatusBar.currentHeight ? StatusBar.currentHeight + 6 : 30) 
+  : (Platform.OS === 'ios' ? 44 : 10);
 
 // URL del backend: lee de .env (EXPO_PUBLIC_API_URL) o usa IP local por defecto
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://10.200.38.48:8000";
@@ -445,7 +452,7 @@ export default function App() {
   if (bookView === 'COVER') {
     return (
       <View style={[styles.coverScreenContainer, { backgroundColor: '#080808' }]}>
-        <StatusBar barStyle="light-content" />
+        <StatusBar barStyle="light-content" translucent={true} backgroundColor="transparent" />
         <ScrollView contentContainerStyle={styles.coverScreenScroll}>
           <View style={styles.bookPhysicalCard}>
             <Image 
@@ -464,7 +471,10 @@ export default function App() {
             onPress={() => setBookView('FRONTISPIECE')}
             activeOpacity={0.8}
           >
-            <Text style={styles.coverPrimaryButtonText}>ABRIR LIBRO ❯</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.coverPrimaryButtonText}>ABRIR LIBRO</Text>
+              <Feather name="chevron-right" size={16} color="#38BDF8" style={{ marginLeft: 6 }} />
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -472,7 +482,10 @@ export default function App() {
             onPress={() => setBookView('READER')}
             activeOpacity={0.7}
           >
-            <Text style={styles.coverSecondaryButtonText}>IR DIRECTO AL LECTOR 📖</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Feather name="book-open" size={14} color="#888" style={{ marginRight: 6 }} />
+              <Text style={styles.coverSecondaryButtonText}>IR DIRECTO AL LECTOR</Text>
+            </View>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -485,7 +498,7 @@ export default function App() {
   if (bookView === 'FRONTISPIECE') {
     return (
       <View style={[styles.coverScreenContainer, { backgroundColor: isPaper ? '#F4EEDD' : '#080808' }]}>
-        <StatusBar barStyle={theme.barStyle} />
+        <StatusBar barStyle={isPaper ? 'dark-content' : 'light-content'} translucent={true} backgroundColor="transparent" />
         <ScrollView contentContainerStyle={styles.coverScreenScroll}>
           <View style={styles.frontispieceCard}>
             <Image 
@@ -513,9 +526,12 @@ export default function App() {
             onPress={() => setBookView('READER')}
             activeOpacity={0.8}
           >
-            <Text style={[styles.coverPrimaryButtonText, { color: isPaper ? '#F4EEDD' : '#38BDF8' }]}>
-              COMENZAR CAPÍTULO 1 ❯
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={[styles.coverPrimaryButtonText, { color: isPaper ? '#F4EEDD' : '#38BDF8' }]}>
+                COMENZAR CAPÍTULO 1
+              </Text>
+              <Feather name="chevron-right" size={16} color={isPaper ? '#F4EEDD' : '#38BDF8'} style={{ marginLeft: 6 }} />
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -523,9 +539,12 @@ export default function App() {
             onPress={() => setBookView('COVER')}
             activeOpacity={0.7}
           >
-            <Text style={[styles.coverSecondaryButtonText, { color: theme.textMuted }]}>
-              ❮ VOLVER A LA TAPA
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Feather name="chevron-left" size={14} color={theme.textMuted} style={{ marginRight: 4 }} />
+              <Text style={[styles.coverSecondaryButtonText, { color: theme.textMuted }]}>
+                VOLVER A LA TAPA
+              </Text>
+            </View>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -537,7 +556,7 @@ export default function App() {
   // -------------------------------------------------------------
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
-      <StatusBar barStyle={theme.barStyle} />
+      <StatusBar barStyle={theme.barStyle} translucent={true} backgroundColor="transparent" />
       
       {/* ----------------- BARRA 1: CONTROL SUPERIOR LIMPIO ----------------- */}
       <View style={[styles.mainTopBar, { backgroundColor: theme.hudBg, borderBottomColor: theme.border }]}>
@@ -546,8 +565,10 @@ export default function App() {
           style={styles.navBarButton}
           onPress={abrirDrawerCapitulos}
           activeOpacity={0.7}
+          hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}
         >
-          <Text style={[styles.navBarButtonText, { color: theme.textMain }]}>☰ ÍNDICE</Text>
+          <Feather name="menu" size={17} color={theme.textMain} style={{ marginRight: 6 }} />
+          <Text style={[styles.navBarButtonText, { color: theme.textMain }]}>ÍNDICE</Text>
         </TouchableOpacity>
 
         {/* Título Central */}
@@ -556,15 +577,21 @@ export default function App() {
           <Text style={[styles.navBarSubTitle, { color: theme.accentAmber }]}>LIBRO I</Text>
         </View>
 
-        {/* Botones Derecha: Tema Claro/Oscuro + Portada + Trayectorias */}
+        {/* Botones Derecha: Tema Claro/Oscuro + Portada + Trayectorias (Estéticos Unicolor) */}
         <View style={styles.navBarActionsRight}>
           {/* Toggle Modo Claro (Moon Reader Sepia) vs Oscuro */}
           <TouchableOpacity 
             style={styles.navBarIconButton}
             onPress={() => setThemeMode(isPaper ? 'dark' : 'paper')}
             activeOpacity={0.7}
+            hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+            accessibilityLabel="Cambiar tema de lectura"
           >
-            <Text style={styles.navBarIconText}>{isPaper ? '🌙' : '☀️'}</Text>
+            <Feather 
+              name={isPaper ? "moon" : "sun"} 
+              size={18} 
+              color={theme.textMain} 
+            />
           </TouchableOpacity>
 
           {/* Volver a ver Portada */}
@@ -572,8 +599,14 @@ export default function App() {
             style={styles.navBarIconButton}
             onPress={() => setBookView('COVER')}
             activeOpacity={0.7}
+            hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+            accessibilityLabel="Ver tapa del libro"
           >
-            <Text style={styles.navBarIconText}>📖</Text>
+            <Feather 
+              name="book-open" 
+              size={18} 
+              color={theme.textMain} 
+            />
           </TouchableOpacity>
 
           {/* Modal Partidas Guardadas */}
@@ -581,8 +614,14 @@ export default function App() {
             style={styles.navBarIconButton}
             onPress={abrirModalBucles}
             activeOpacity={0.7}
+            hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+            accessibilityLabel="Registro de trayectorias"
           >
-            <Text style={styles.navBarIconText}>📚</Text>
+            <Feather 
+              name="bookmark" 
+              size={18} 
+              color={theme.textMain} 
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -629,9 +668,12 @@ export default function App() {
         {/* Banner si el usuario está leyendo un capítulo pasado */}
         {viewingPastPassage && (
           <View style={[styles.pastChapterBanner, { backgroundColor: theme.cardBg, borderColor: theme.accentAmber }]}>
-            <Text style={[styles.pastChapterBannerTitle, { color: theme.accentAmber }]}>
-              📖 REVISANDO HISTORIAL DE CAPÍTULOS
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+              <Feather name="clock" size={13} color={theme.accentAmber} style={{ marginRight: 6 }} />
+              <Text style={[styles.pastChapterBannerTitle, { color: theme.accentAmber }]}>
+                REVISANDO HISTORIAL DE CAPÍTULOS
+              </Text>
+            </View>
             <Text style={[styles.pastChapterBannerSub, { color: theme.textSecondary }]}>
               {viewingPastPassage.act_title} • Turno {viewingPastPassage.turn_number}
             </Text>
@@ -640,7 +682,10 @@ export default function App() {
               onPress={() => setViewingPastPassage(null)}
               activeOpacity={0.8}
             >
-              <Text style={styles.returnPresentButtonText}>❮ VOLVER A LA PÁGINA ACTUAL</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Feather name="arrow-left" size={13} color="#080808" style={{ marginRight: 6 }} />
+                <Text style={styles.returnPresentButtonText}>VOLVER A LA PÁGINA ACTUAL</Text>
+              </View>
             </TouchableOpacity>
           </View>
         )}
@@ -668,22 +713,7 @@ export default function App() {
           </View>
         ) : null}
 
-        {/* Ilustración de la Escena (FLUX) */}
-        {!viewingPastPassage && imageUrl ? (
-          <View style={[styles.sceneIllustrationContainer, { borderColor: theme.border, backgroundColor: theme.cardBg }]}>
-            <Image 
-              source={{ uri: imageUrl }} 
-              style={styles.sceneIllustration} 
-              resizeMode="cover"
-              onError={() => setImageError(true)}
-            />
-            <Text style={[styles.sceneIllustrationCaption, { color: theme.textMuted }]}>
-              // VISOR DE ENTORNO //
-            </Text>
-          </View>
-        ) : null}
-
-        {/* Prosa Principal de la Novela con animación de paso de página */}
+        {/* Prosa Principal de la Novela con animación de paso de página (Sin visor de entorno intrusivo) */}
         <Animated.View style={{ opacity: pageFadeAnim, transform: [{ translateX: pageSlideAnim }] }}>
           <Text style={[styles.prose, { color: theme.prose }]}>
             {viewingPastPassage 
@@ -798,8 +828,12 @@ export default function App() {
                 <Text style={[styles.modalTitle, { color: theme.headerTitle }]}>ÍNDICE DE CAPÍTULOS</Text>
                 <Text style={[styles.dossierSubTitle, { color: theme.accentAmber }]}>RELEER ACONTECIMIENTOS PASADOS</Text>
               </View>
-              <TouchableOpacity onPress={() => setShowChaptersDrawer(false)}>
-                <Text style={[styles.modalCloseText, { color: theme.accentAmber }]}>[ CERRAR ✕ ]</Text>
+              <TouchableOpacity 
+                onPress={() => setShowChaptersDrawer(false)}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                style={{ padding: 4 }}
+              >
+                <Feather name="x" size={20} color={theme.accentAmber} />
               </TouchableOpacity>
             </View>
 
@@ -809,9 +843,12 @@ export default function App() {
               onPress={() => Linking.openURL(`${API_URL}/api/game/${sessionId}/export/epub`)}
               activeOpacity={0.8}
             >
-              <Text style={[styles.epubBannerButtonText, { color: isPaper ? '#F4EEDD' : '#38BDF8' }]}>
-                📥 DESCARGAR ESTA NOVELA EN EPUB
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
+                <Feather name="download" size={15} color={isPaper ? '#F4EEDD' : '#38BDF8'} style={{ marginRight: 8 }} />
+                <Text style={[styles.epubBannerButtonText, { color: isPaper ? '#F4EEDD' : '#38BDF8' }]}>
+                  DESCARGAR ESTA NOVELA EN EPUB
+                </Text>
+              </View>
               <Text style={[styles.epubBannerButtonSub, { color: isPaper ? '#C5B9A4' : '#94A3B8' }]}>
                 Compilada para Apple Books, Moon+ Reader y Kindle
               </Text>
@@ -893,8 +930,12 @@ export default function App() {
           <View style={[styles.modalContent, { backgroundColor: theme.bg, borderColor: theme.border }]}>
             <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
               <Text style={[styles.modalTitle, { color: theme.headerTitle }]}>REGISTRO DE TRAYECTORIAS (ARQUÍMEDES)</Text>
-              <TouchableOpacity onPress={() => setShowLoopsModal(false)}>
-                <Text style={[styles.modalCloseText, { color: theme.accentAmber }]}>[ CERRAR ✕ ]</Text>
+              <TouchableOpacity 
+                onPress={() => setShowLoopsModal(false)}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                style={{ padding: 4 }}
+              >
+                <Feather name="x" size={20} color={theme.accentAmber} />
               </TouchableOpacity>
             </View>
 
@@ -903,7 +944,10 @@ export default function App() {
               onPress={comenzarNuevaNovela}
               activeOpacity={0.8}
             >
-              <Text style={styles.newLoopButtonText}>+ COMENZAR NUEVA TRAYECTORIA DESDE EL INICIO CANÓNICO</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Feather name="plus-circle" size={13} color="#38BDF8" style={{ marginRight: 8 }} />
+                <Text style={styles.newLoopButtonText}>COMENZAR NUEVA TRAYECTORIA DESDE EL INICIO CANÓNICO</Text>
+              </View>
             </TouchableOpacity>
 
             <Text style={[styles.savedGamesSectionTitle, { color: theme.textMuted }]}>
@@ -961,14 +1005,16 @@ export default function App() {
                           onPress={() => Linking.openURL(`${API_URL}/api/game/${game.session_id}/export/epub`)}
                           activeOpacity={0.7}
                         >
-                          <Text style={[styles.savedGameEpubButtonText, { color: isPaper ? '#F4EEDD' : '#38BDF8' }]}>📥 EPUB</Text>
+                          <Feather name="download" size={12} color={isPaper ? '#F4EEDD' : '#38BDF8'} style={{ marginRight: 4 }} />
+                          <Text style={[styles.savedGameEpubButtonText, { color: isPaper ? '#F4EEDD' : '#38BDF8' }]}>EPUB</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity 
                           style={styles.deleteGameButton}
                           onPress={() => eliminarBucle(game.session_id)}
+                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         >
-                          <Text style={styles.deleteGameButtonText}>✕</Text>
+                          <Feather name="trash-2" size={13} color="#F87171" />
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -994,8 +1040,12 @@ export default function App() {
                 <Text style={[styles.modalTitle, { color: theme.headerTitle }]}>DOSSIER TÁCTICO & CONTINUIDAD</Text>
                 <Text style={[styles.dossierSubTitle, { color: theme.accentAmber }]}>ARQUÍMEDES // DOCUMENTO MAESTRO</Text>
               </View>
-              <TouchableOpacity onPress={() => setShowDossierModal(false)}>
-                <Text style={[styles.modalCloseText, { color: theme.accentAmber }]}>[ CERRAR ✕ ]</Text>
+              <TouchableOpacity 
+                onPress={() => setShowDossierModal(false)}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                style={{ padding: 4 }}
+              >
+                <Feather name="x" size={20} color={theme.accentAmber} />
               </TouchableOpacity>
             </View>
 
@@ -1006,9 +1056,12 @@ export default function App() {
                 onPress={() => Linking.openURL(`${API_URL}/api/game/${sessionId}/export/epub`)}
                 activeOpacity={0.8}
               >
-                <Text style={[styles.exportEpubButtonText, { color: isPaper ? '#F4EEDD' : '#38BDF8' }]}>
-                  📥 EXPORTAR NOVELA A EPUB (APPLE BOOKS)
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
+                  <Feather name="download" size={15} color={isPaper ? '#F4EEDD' : '#38BDF8'} style={{ marginRight: 8 }} />
+                  <Text style={[styles.exportEpubButtonText, { color: isPaper ? '#F4EEDD' : '#38BDF8' }]}>
+                    EXPORTAR NOVELA A EPUB (APPLE BOOKS)
+                  </Text>
+                </View>
                 <Text style={[styles.exportEpubButtonSubtext, { color: isPaper ? '#C5B9A4' : '#94A3B8' }]}>
                   Compila los capítulos y escenas vividas hasta ahora en tu iPad
                 </Text>
@@ -1139,7 +1192,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   coverScreenScroll: {
-    paddingVertical: 50,
+    paddingTop: STATUSBAR_HEIGHT + 20,
+    paddingBottom: 40,
     paddingHorizontal: 25,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1263,13 +1317,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 10,
+    paddingTop: STATUSBAR_HEIGHT + 10,
     paddingBottom: 10,
     borderBottomWidth: 1,
+    minHeight: STATUSBAR_HEIGHT + 54,
   },
   navBarButton: {
-    paddingVertical: 4,
-    paddingHorizontal: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 6,
   },
   navBarButtonText: {
     fontFamily: 'JetBrainsMono_400Regular',
@@ -1294,13 +1352,14 @@ const styles = StyleSheet.create({
   navBarActionsRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 8,
   },
   navBarIconButton: {
-    padding: 4,
-  },
-  navBarIconText: {
-    fontSize: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   // ----------------- BARRA 2: CINTA DE ESTADO TÁCTICO -----------------
@@ -1800,6 +1859,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   savedGameEpubButton: {
+    flexDirection: 'row',
     borderWidth: 1,
     paddingVertical: 8,
     paddingHorizontal: 10,
