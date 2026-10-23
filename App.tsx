@@ -87,7 +87,7 @@ export default function App() {
 
   // Estado de la novela en curso (Arquímedes)
   const [sessionId, setSessionId] = useState("");
-  const [actTitle, setActTitle] = useState("Acto I: La Puerta de Hierro y Ceniza");
+  const [actTitle, setActTitle] = useState("Acto I: La Academia");
   const [actNumber, setActNumber] = useState(1);
   const [climaxPhase, setClimaxPhase] = useState("Inmersión Analítica");
   const [chapterNumber, setChapterNumber] = useState(1);
@@ -170,7 +170,7 @@ export default function App() {
     setIsCrossroad(Boolean(data.is_crossroad));
     setChapterNumber(data.chapter_number ?? 1);
     setChapterTitle(data.chapter_title ?? "El Umbral de la Academia");
-    setActTitle(data.act_title ?? "Acto I: La Puerta de Hierro y Ceniza");
+    setActTitle(data.act_title ?? "Acto I: La Academia");
     if (data.act_number) setActNumber(data.act_number);
     if (data.climax_phase) setClimaxPhase(data.climax_phase);
     
